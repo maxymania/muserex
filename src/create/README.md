@@ -8,6 +8,9 @@ create [-bcdfspM] [-A major] [-I minor] [-[ugoa] rights] Name1 ... NameN
 # DESCRIPTION
 
 ## File Type options
+* -l target : symbolic link
+* -h target : hard link
+* -m target : do a stat()->mknod() copy.
 * -b : block device
 * -c : character device
 * -d : directory
@@ -24,6 +27,9 @@ create [-bcdfspM] [-A major] [-I minor] [-[ugoa] rights] Name1 ... NameN
 * -g [rwxst]: rights the group will have (default is r; rx on dirs)
 * -o [rwxst]: rights others will have (default is r; rx on dirs)
 * -a [rwxst]: rights all will have
+
+## Other
+* -M : prefer mkfifo and open(O_CREAT) rather than mknod.
 
 # EXAMPLES
 

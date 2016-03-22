@@ -53,6 +53,7 @@ mode_t perm  = 0644;
 mode_t permd = 0755;
 dev_t dev = 0;
 unsigned int major=0,minor=0;
+string_t sourceFile = NULL;
 
 string_t oarg(){
 	if(noptarg)return noptarg;
@@ -65,9 +66,13 @@ string_t oarg(){
 
 int main(int argc,const string_t* argv){
 	int c;
-	while ( (c = ngetopt(argc, argv, "-bcdfspMA:I:u:g:o:a:")) != -1) {
+	while ( (c = ngetopt(argc, argv, "-bcdfspMA:I:u:g:o:a:l:h:m:")) != -1) {
 		switch(c){
 		caseof('-',goto end)
+		case 'l': /* symlink */
+		case 'h': /* hardlinks */
+		case 'm': /* stat-mknod */
+			sourceFile = noptarg;
 		case 'd': way='M'; /* directory */
 		case 'b': /* block device */
 		case 'c': /* character device */
@@ -129,10 +134,11 @@ void getMode(){
 	}
 }
 
-void notifyError(int rv){
-	if(rv==0) return; /* no error! */
+int notifyError(int rv){
+	if(rv==0) return 0; /* no error! */
 	perror("create");
 	exvr = 1;
+	return 1;
 }
 #define _(x) notifyError(x)
 
@@ -143,10 +149,15 @@ int mkFile(string_t arg){
 }
 
 void createObj(string_t arg){
+	struct stat stb;
 	switch(way){
 	caseof('m', _(mknod(arg,mode|perm,dev)) )
 	caseof('M',
 		switch(type){
+		caseof('l', _(symlink(sourceFile,arg)) )
+		caseof('h', _(link(sourceFile,arg)) )
+		caseof('m', if(!_(stat(sourceFile,&stb)))
+						_(mknod(arg,stb.st_mode,stb.st_rdev))  )
 		caseof('b', _(mknod(arg,S_IFBLK|perm,dev)) )
 		caseof('c', _(mknod(arg,S_IFCHR|perm,dev)) )
 		caseof('d', _(mkdir(arg,permd)) )

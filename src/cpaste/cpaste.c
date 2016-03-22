@@ -68,7 +68,8 @@ enum {
 };
 int way = wCOPY;
 #define W(x) way=w##x
-
+int anm = 0;
+int quiet = 0;
 int exvr = 0;
 
 void setDir();
@@ -78,13 +79,15 @@ char buffer[4096];
 
 int main(int argc,const string_t* argv){
 	int c;
-	while ( (c = ngetopt(argc, argv, "-d:csh")) != -1) {
+	while ( (c = ngetopt(argc, argv, "-d:cshaq")) != -1) {
 		switch(c){
 		caseof('-',goto end)
 		caseof('d',setDir())
 		caseof('c',W(CUT))
 		caseof('s',W(SYML))
 		caseof('h',W(HRDL))
+		caseof('a',anm=1)
+		caseof('q',quiet=1)
 		}
 	}
 end:
@@ -118,15 +121,32 @@ void setDir(){
 }
 
 int copyFile(string_t from, string_t to){
-	struct stat stb;
+	char buf[strlen(to)+16];
+	struct stat stb,stb2;
 	int n,src,dst;
 	if(stat(from,&stb)) return 1;
 	if(S_ISDIR(stb.st_mode)){
 		errno=EISDIR;
 		return 1;
 	}
+	if(anm){
+		n=0;
+		sprintf(buf,"%s",to);
+		while(!stat(buf,&stb2)) {
+			sprintf(buf,"%s(%d)",to,n++);
+			if(n<100) continue;
+			errno=EEXIST;
+			return 1;
+		}
+		if(n&&!quiet) printf("autoname: %s -> %s",to,buf);
+		to = buf;
+	}
 	if(!(S_ISREG(stb.st_mode))){
 		return mknod(to,stb.st_mode,stb.st_rdev);
+	}
+	if(!stat(to,&stb2)) {
+		errno=EEXIST;
+		return 1;
 	}
 	src = open(from,O_RDONLY);
 	if(src<0) return 1;
@@ -149,6 +169,14 @@ void cpaste(string_t file){
 	string_t fn = basename((char*)file);
 	size_t szt = strlen(fn)+strlen(destDir)+16;
 	char buf[szt];
+	sprintf(buf,"%s",file);
+	string_t dn = dirname((char*)buf);
+	if(!strcmp(dn,destDir)) {
+		fprintf(stderr,
+			"Warning : trying to cpaste `%s' over itself (in `%s'); abort\n",
+				fn,destDir);
+		exit(1);
+	}
 	sprintf(buf,"%s/%s",destDir,fn);
 	switch(way){
 	caseof(wCOPY,_(copyFile(file,buf)))
