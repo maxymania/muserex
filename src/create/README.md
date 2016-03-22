@@ -18,6 +18,8 @@ create [-bcdfspM] [-A major] [-I minor] [-[ugoa] rights] Name1 ... NameN
 ## Devices:
 * -A major: major device number
 * -I minor: minor device number
+
+## Rights:
 * -u [rwxst]: rights the user will have (default is rw; rwx on dirs)
 * -g [rwxst]: rights the group will have (default is r; rx on dirs)
 * -o [rwxst]: rights others will have (default is r; rx on dirs)
