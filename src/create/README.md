@@ -3,7 +3,7 @@ create - a tool that create file, directories, named pipes, sockets and devices.
 
 # SYNOPSIS
 
-create [-bcdfspM] [-A major] [-I minor] [-[ugoa] rights] Name1 ... NameN
+create [-lhmbcdfspM] [-A major] [-I minor] [-[ugoa] rights] Name1 ... NameN
 
 # DESCRIPTION
 
