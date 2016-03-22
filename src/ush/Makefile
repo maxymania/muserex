@@ -18,24 +18,20 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-include ../generic.mk
+include ../../generic.mk
 
-CF := -I./include
+include src.mk
 
-lib += src/ngetopt.o
-
-allofit: $(tools)
-	echo done
-
-src/%.o: src/%.c
-	$(C) $(CF) -c $? -o $@
+CF := -I../../lib/include
 
 %.o: %.c
-	$(C) $(CF) -c $? -o $@
+	$(C) $(CF) -c $< -o $@
 
-libngetopt.a: $(lib)
-	ar rcs $@ $(lib)
+../../lib/libngetopt.a: ../../lib
+	$(MAKE) -C $< libngetopt.a
 
-linenoise.a: src/linenoise.o
-	ar rcs $@ src/linenoise.o
+../../lib/linenoise.a: ../../lib
+	$(MAKE) -C $< linenoise.a
 
+a.out: $(src) ../../lib/linenoise.a
+	$(L) $? -o $@

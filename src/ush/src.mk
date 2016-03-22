@@ -18,24 +18,8 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-include ../generic.mk
-
-CF := -I./include
-
-lib += src/ngetopt.o
-
-allofit: $(tools)
-	echo done
-
-src/%.o: src/%.c
-	$(C) $(CF) -c $? -o $@
-
-%.o: %.c
-	$(C) $(CF) -c $? -o $@
-
-libngetopt.a: $(lib)
-	ar rcs $@ $(lib)
-
-linenoise.a: src/linenoise.o
-	ar rcs $@ src/linenoise.o
-
+src += ush.o
+src += system.o
+src += string.o
+src += docmd.o
+src += prompt.o
