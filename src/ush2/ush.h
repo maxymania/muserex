@@ -40,3 +40,4 @@ string_t sh_prompt();
 string_t sh_getvar(string_t var);
 sds sh_expand_string(string_t src);
 
+void sh_initAutoComplete();

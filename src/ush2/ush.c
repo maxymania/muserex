@@ -29,6 +29,7 @@
 int main(int argc,const string_t* argv){
 	sh_prompt_update();
 	//linenoiseHistorySetMaxLen(10);
+	sh_initAutoComplete();
 	string_t line;
 	sds prcdLn;
 	while((line = linenoise(sh_prompt())) != NULL) {

@@ -24,3 +24,4 @@ src += string.o
 src += docmd.o
 src += prompt.o
 src += expand.o
+src += autocomplete.o
