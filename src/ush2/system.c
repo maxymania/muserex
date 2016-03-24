@@ -22,24 +22,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <glob.h>
 #include "ush.h"
 
 enum { MAXARGS = 4096 };
 static string_t args[MAXARGS+1];
+static int nomem;
 
 #define nilf(x) if(!(x)) return NULL
 #define fail(x) if(!(x)) return 
 #define vp (void*)
+
+static int sh_globit(int argi){
+	int i;
+	argi--;
+	glob_t G;
+	switch(glob(args[argi], 0, NULL, &G)){
+	case 0:
+		for(i=0; (argi < MAXARGS) &&
+			G.gl_pathv[i];++i,argi++)
+			args[argi] = shs_dup(G.gl_pathv[i]);
+		return argi;
+	case GLOB_NOSPACE:
+		args[0] = "echo";
+		args[1] = "Out of memory!";
+		args[0] = 0;
+		return 2;
+	default:
+		return argi+1;
+	}
+}
 
 void sh_system(string_t cmd){
 	int argc=0,i;
 	string_t cur=cmd;
 	char* buf = malloc(strlen(cmd)+100);
 	fail(buf);
-	while(argc<3){
+	while(argc<MAXARGS){
 		args[argc] = shs_decode(&cur,buf);
 		if(!args[argc])break;
 		argc++;
+		if(shs_wasGlob())
+			argc = sh_globit(argc);
 	}
 	args[argc]=NULL;
 	if(argc)

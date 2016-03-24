@@ -58,9 +58,12 @@ string_t shs_dup(string_t str){
 	return c;
 }
 
+static int wasGlob;
+
 string_t shs_decode(string_t *str,char* buf){
 	char e;
 	chrp d;
+	wasGlob = 0;
 	d = buf;
 	while(*(*str) && *(*str)<=' '){
 		(*str)++;
@@ -69,13 +72,17 @@ string_t shs_decode(string_t *str,char* buf){
 	while(e=*(*str)){
 		if(e<=' ')break;
 		switch(e){
-		caseof('\\',*d++=*(++(*str)))
-		casedef(*d++=e);
+		caseof('\\', *d++=*(++(*str)) )
+		caseof('*', wasGlob=1; *d++=e )
+		casedef(*d++=e)
 		}
 		(*str)++;
 	}
 	*d++=0;
 	if(!*buf) return NULL; /* zero string */
 	return shs_dup(buf);
+}
+int shs_wasGlob(){
+	return wasGlob;
 }
 

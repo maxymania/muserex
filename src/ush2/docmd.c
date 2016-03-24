@@ -42,6 +42,12 @@ static void sh_cd(int argc,const string_t *argv){
 	chdir(dest);
 }
 
+static void sh_printlines(int argc,const string_t *argv){
+	int i;
+	for(i=1;i<argc;++i)
+		printf("%s\n",argv[i]);
+}
+
 static void sh_spawn(int argc,const string_t *argv){
 	int status;
 	pid_t p;
@@ -58,6 +64,8 @@ void sh_docmd(int argc,const string_t *argv){
 	if(argc<1)return;
 	if(!strcmp("cd",argv[0])){
 		sh_cd(argc,argv);
+	}else if(!strcmp(":",argv[0])){
+		sh_printlines(argc,argv);
 	}else{
 		sh_spawn(argc,argv);
 	}

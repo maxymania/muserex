@@ -29,6 +29,7 @@ string_t shs_cat_(string_t first,...);
 #define shs_cat(...) shs_cat_(__VA_ARGS__)
 string_t shs_dup(string_t str);
 string_t shs_decode(string_t *str,char* buf);
+int shs_wasGlob();
 
 void sh_system(string_t cmd);
 
