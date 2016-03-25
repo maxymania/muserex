@@ -21,7 +21,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include "ush.h"
+#include "ifm.h"
 
 static int sh_skip_word(string_t var){
 	int n=0;

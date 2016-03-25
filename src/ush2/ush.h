@@ -26,7 +26,7 @@
 typedef const char* string_t;
 
 string_t shs_cat_(string_t first,...);
-#define shs_cat(...) shs_cat_(__VA_ARGS__)
+#define shs_cat(...) shs_cat_(__VA_ARGS__,(void*)0)
 string_t shs_dup(string_t str);
 string_t shs_decode(string_t *str,char* buf);
 int shs_wasGlob();

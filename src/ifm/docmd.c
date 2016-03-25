@@ -19,18 +19,58 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include "ifm.h"
 
-typedef const char* string_t;
+#define nilf(x) if(!(x)) return NULL
+#define fail(x) if(!(x)) return 
+typedef char* chrp;
+typedef const chrp* cocp;
 
-string_t shs_cat_(string_t first,...);
-#define shs_cat(...) shs_cat_(__VA_ARGS__,(void*)0)
-string_t shs_dup(string_t str);
-string_t shs_decode(string_t *str,char* buf);
+static void sh_cd(int argc,const string_t *argv){
+	string_t dest;
+	if(argc==1)
+		dest = getenv("HOME");
+	else
+		dest = argv[1];
+	fail(dest);
+	chdir(dest);
+}
 
-void sh_system(string_t cmd);
+static void sh_printlines(int argc,const string_t *argv){
+	int i;
+	for(i=1;i<argc;++i)
+		printf("%s\n",argv[i]);
+}
 
-void sh_docmd(int argc,const string_t *argv);
+static void sh_spawn(int argc,const string_t *argv){
+	int status;
+	pid_t p;
+	p = fork();
+	if(p<0) { perror("fork"); return; }
+	if(p==0){
+		execvp(argv[0],(cocp)argv);
+		exit(1); // fail!
+	}
+	waitpid(p,&status,0);
+}
 
-void sh_prompt_update();
-string_t sh_prompt();
+void sh_docmd(int argc,const string_t *argv){
+	if(argc<1)return;
+	if(!strcmp("cd",argv[0])){
+		sh_cd(argc,argv);
+	}else if(!strcmp("list",argv[0])){
+		sh_show(argc,argv);
+	}else if(!strcmp(":",argv[0])){
+		sh_printlines(argc,argv);
+	}else{
+		sh_spawn(argc,argv);
+	}
+}
+
+

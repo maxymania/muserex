@@ -21,12 +21,18 @@
  */
 #pragma once
 
+#include <sds.h>
+
 typedef const char* string_t;
 
 string_t shs_cat_(string_t first,...);
 #define shs_cat(...) shs_cat_(__VA_ARGS__,(void*)0)
 string_t shs_dup(string_t str);
 string_t shs_decode(string_t *str,char* buf);
+int shs_prefix(string_t prefix,string_t str);
+
+int shs_wasGlob();
+int shs_wasVar();
 
 void sh_system(string_t cmd);
 
@@ -34,3 +40,13 @@ void sh_docmd(int argc,const string_t *argv);
 
 void sh_prompt_update();
 string_t sh_prompt();
+
+string_t sh_getvar(string_t var);
+sds sh_expand_string(string_t src);
+
+void sh_initAutoComplete();
+
+
+/* COMMANDS: */
+void sh_show(int argc,const string_t *argv);
+

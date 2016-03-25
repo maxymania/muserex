@@ -23,15 +23,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glob.h>
-#include "ush.h"
+#include "ifm.h"
 
 enum { MAXARGS = 4096 };
 static string_t args[MAXARGS+1];
-static int nomem;
+static int raw;
 
 #define nilf(x) if(!(x)) return NULL
 #define fail(x) if(!(x)) return 
 #define vp (void*)
+
+static void sh_check_cmd(){
+	raw = (!strcmp("list",args[0]))
+	;
+}
 
 static int sh_globit(int argi){
 	int i;
@@ -54,17 +59,46 @@ static int sh_globit(int argi){
 	}
 }
 
+static string_t sh_getvarOr(string_t var,string_t ors){
+	string_t val = sh_getvar(var);
+	if(!val)return ors;
+	return val;
+}
+
 void sh_system(string_t cmd){
 	int argc=0,i;
 	string_t cur=cmd;
+	string_t temp;
+	sds SWork;
 	char* buf = malloc(strlen(cmd)+100);
 	fail(buf);
 	while(argc<MAXARGS){
 		args[argc] = shs_decode(&cur,buf);
 		if(!args[argc])break;
+		if(!argc)sh_check_cmd();
 		argc++;
-		if(shs_wasGlob())
-			argc = sh_globit(argc);
+		if(!raw){
+			if(shs_wasVar()){
+				argc--;
+				temp = args[argc];
+				if(*temp=='$') {
+					args[argc] = shs_dup(sh_getvarOr(temp+1,""));
+					free(vp temp);
+				} else if(*temp=='~') {
+					if(temp[1]){
+						SWork = sdsnew(sh_getvarOr("HOME","~"));
+						SWork = sdscat(SWork,temp+1);
+						args[argc] = shs_dup(SWork);
+						sdsfree(SWork);
+					} else
+						args[argc] = shs_dup(sh_getvarOr("HOME","~"));
+					free(vp temp);
+				}
+				argc++;
+			}
+			if(shs_wasGlob())
+				argc = sh_globit(argc);
+		}
 	}
 	args[argc]=NULL;
 	if(argc)

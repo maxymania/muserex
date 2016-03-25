@@ -19,18 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include <stdio.h>
+#include <stdlib.h>
+#include <linenoise.h>
+#include "ifm.h"
 
-typedef const char* string_t;
+#define cPTR (void*)
 
-string_t shs_cat_(string_t first,...);
-#define shs_cat(...) shs_cat_(__VA_ARGS__,(void*)0)
-string_t shs_dup(string_t str);
-string_t shs_decode(string_t *str,char* buf);
+int main(int argc,const string_t* argv){
+	sh_prompt_update();
+	//linenoiseHistorySetMaxLen(10);
+	sh_initAutoComplete();
+	string_t line;
+	sds prcdLn;
+	while((line = linenoise(sh_prompt())) != NULL) {
+		linenoiseHistoryAdd(line);
+		//prcdLn = sh_expand_string(line);
+		sh_system(line);
+		free(cPTR line);
+		//sh_system(prcdLn);
+		//sdsfree(prcdLn);
+	}
+}
 
-void sh_system(string_t cmd);
 
-void sh_docmd(int argc,const string_t *argv);
-
-void sh_prompt_update();
-string_t sh_prompt();
