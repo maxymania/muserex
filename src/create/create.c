@@ -146,6 +146,7 @@ int mkFile(string_t arg){
 	int fd = open(arg,O_RDONLY|O_CREAT,perm);
 	if(fd<0)return -1;
 	close(fd);
+	return 0;
 }
 
 void createObj(string_t arg){
