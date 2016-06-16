@@ -24,6 +24,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <glob.h>
+#include <time.h>
 #include "ifm.h"
 
 #define aif(x) if(x)

@@ -34,7 +34,7 @@ CF := -I../../lib/include
 	$(MAKE) -C $< linenoise.a
 
 ../../lib/libsds.a: ../../lib
-	$(MAKE) -C $< linenoise.a
+	$(MAKE) -C $< libsds.a
 
 a.out: $(src) ../../lib/linenoise.a ../../lib/libsds.a
 	$(L) $? -o $@
