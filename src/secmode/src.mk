@@ -18,28 +18,6 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-include generic.mk
+pre += syscalls.h
 
-tools += bin/create bin/cpaste bin/ush bin/ush2 bin/ifm
-linux += bin/secmode
-
-allofit: $(tools)
-	echo done
-
-linux: $(linux)
-	echo linux
-
-src/%/a.out: src/%
-	$(MAKE) -C $< a.out
-
-src/%.o: src/%.c
-	$(C) -c $? -o $@
-
-bin/%: src/%.o
-	$(L) $? -o $@
-
-bin/%: src/%/a.out
-	mv $< $@
-
-
-
+src += secmode.o

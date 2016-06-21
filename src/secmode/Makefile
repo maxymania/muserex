@@ -18,28 +18,21 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-include generic.mk
+include ../../generic.mk
 
-tools += bin/create bin/cpaste bin/ush bin/ush2 bin/ifm
-linux += bin/secmode
+include src.mk
 
-allofit: $(tools)
-	echo done
+CF := -I../../lib/include
 
-linux: $(linux)
-	echo linux
+%.h: %.hm4
+	m4 $< > $@
 
-src/%/a.out: src/%
-	$(MAKE) -C $< a.out
+secmode.o: secmode.c $(pre)
+	$(C) $(CF) -c secmode.c -o $@
 
-src/%.o: src/%.c
-	$(C) -c $? -o $@
+%.o: %.c
+	$(C) $(CF) -c $< -o $@
 
-bin/%: src/%.o
-	$(L) $? -o $@
-
-bin/%: src/%/a.out
-	mv $< $@
-
-
-
+a.out: $(src)
+	$(L) $? -lseccomp -o $@
+	rm $(pre) || true

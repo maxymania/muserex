@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2016 Simon Schmidt
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+/* Platform specific system calls! */
+define(bancall,`#ifdef __NR_$1
+seccomp_rule_add(ctx, SCMP_ACT_ERRNO($2), SCMP_SYS($1), 0);
+#endif')
+
+/* IA-32 & AMD64 */
+bancall(vm86,ENOSYS)
+bancall(vm86old,ENOSYS)
+/* Sparc */
+bancall(utrap_install,ENOSYS)
+bancall(perfctr,ENOSYS)
+/* Sparc64 */
+bancall(kern_features,ENOSYS)
+/* PowerPC */
+bancall(spu_create,ENOSYS)
+bancall(spu_run,ENOSYS)
+bancall(subpage_prot,ENOSYS)
+bancall(ppc_rtas,ENOSYS)
+/* s390 */
+bancall(s390_runtime_instr,ENOSYS)
+bancall(s390_pci_mmio_read,ENOSYS)
+bancall(s390_pci_mmio_write,ENOSYS)
+/* IA-64 aka Itanium */
+bancall(perfmonctl,ENOSYS)
+
+/* "Not on x86" */
+bancall(pciconfig_read,ENOSYS)
+bancall(pciconfig_write,ENOSYS)
+bancall(pciconfig_iobase,ENOSYS)
+
