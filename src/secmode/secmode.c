@@ -51,7 +51,7 @@ int main(int argc,const string_t* argv){
 	caseof('S',flags|=SYS_VSPLC)
 	}
 	
-	ctx = seccomp_init(SCMP_ACT_KILL);
+	ctx = seccomp_init(SCMP_ACT_ALLOW);
 
 	if(flags&HW_SPECIFIC){
 		#include "syscalls.h"
